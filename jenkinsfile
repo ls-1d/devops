@@ -3,9 +3,9 @@ pipeline {
     
     tools {nodejs "Node v14.18.1"}
 
-    environment {
-        //DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') 
-    }
+    // environment {
+    //     //DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') 
+    // }
 
     stages {
         stage('Checkout') {
