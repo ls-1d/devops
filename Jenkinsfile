@@ -1,8 +1,5 @@
 pipeline {
   agent any
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
   environment {
     DOCKERHUB_CREDENTIALS = credentials('autopilotsedate66-dockerhub')
   }
@@ -22,6 +19,13 @@ pipeline {
         }
       }
     }
+    // running the container
+    stage('Running container') {
+      steps {
+        sh 'docker run -d -p 80:80 autopilotsedate66/frontend'
+      }
+    }
+    
     stage('Login') {
       steps {
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
