@@ -1,0 +1,53 @@
+name: Build Client
+
+on:
+  push:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Checkout the main GitHub branch
+        uses: actions/checkout@v4
+
+      - name: Step 2 - Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14
+
+      - name: Step 3 - Install Package Dependencies from Package.json
+        run: |
+          cd all_in_docker/client
+          npm i
+          CI=false npm run build
+          ls -a
+
+      - name: Step 4 - Persist Artifact gives zip files to download
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-files
+          path: all_in_docker/client/build
+
+  frontend-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Checkout the main GitHub branch
+        uses: actions/checkout@v4
+      
+      - name: Step 2 - Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Step 3 - Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./all_in_docker/client
+          tags: autopilotsedate66/frontend:latest
+          push: true
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.TOKEN_GH }}

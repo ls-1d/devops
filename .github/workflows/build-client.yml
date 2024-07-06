@@ -4,34 +4,64 @@ on:
   push:
     branches: [ "main" ]
 
-  workflow_dispatch:
-
 jobs:
-  frontend-build:
+
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Step 1 - Checkout the main GitHub branch
-        uses: actions/checkout@v4
+    - name: Step 1 - Checkout the main GitHub branch
+      uses: actions/checkout@v4
 
-      - name: Step 2 - Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 14
+    - name: Step 2 - Setup SSH
+      uses: shimataro/ssh-key-action@v2
+      with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: Step 3 - Install Package Dependencies from Package.json
-        run: |
-          cd all_in_docker/client
-          npm i
-          CI=false npm run build
-          ls -a
+    # - name: Step 3 - rsync over SSH
+    #   run: |
+    #     touch foo.txt
+    #     rsync  ./foo.txt ${{ secrets.REMOTE_USERNAME }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USERNAME }}/
 
-      - name: Step 4 - Persist Artifact gives zip files to download
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build-files
-          path: all_in_docker/client/build
+    # - name: Step 4 - Executing remote ssh commands using passwordss
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: ${{ secrets.REMOTE_HOST }}
+    #     username: ${{ secrets.REMOTE_USERNAME }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     script: |
+    #       cd
+    #       ls -a
 
-  frontend-docker:
+    - name: Step 3 - Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 14
+
+    - name: Step 4 - Install Package Dependencies from Package.json
+      run: |
+        cd all_in_docker/client
+        npm i
+        CI=false npm run build
+        ls -a
+
+    - name: Step 5 - Transfer Build Files to Ubuntu Instance
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "./all_in_docker/client/build"
+        target: "/tmp"
+
+    - name: Step 6 - Persist Artifact gives zip files to download
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build-files
+        path: all_in_docker/client/build
+
+  build-docker:
     runs-on: ubuntu-latest
     steps:
       - name: Step 1 - Checkout the main GitHub branch
@@ -50,4 +80,4 @@ jobs:
           tags: autopilotsedate66/frontend:latest
           push: true
           secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.TOKEN_GH }}
+            GIT_AUTH_TOKEN=${{ secrets.TOKEN_GITHUB }}
