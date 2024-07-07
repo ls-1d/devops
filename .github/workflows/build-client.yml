@@ -2,8 +2,7 @@
 name: build client - CI
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
 
