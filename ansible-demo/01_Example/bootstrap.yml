@@ -1,0 +1,26 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install updates
+    apt:
+      upgrade: dist
+      update_cache: yes
+  
+  - name: create user simone
+    user:
+      name: simone
+      groups: root
+  - name: authorized key
+    authorized_key:
+      user: simone
+      key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE2naOW1eE7wq/SPMKIxw5XhYR4fZ/d4OZAV0aeyODve default_dev'
+
+  - name:
+    copy:
+      src: sudoer_simone
+      dest: /etc/sudoers.d/simone
+      owner: root
+      group: root
+      mode: 0440

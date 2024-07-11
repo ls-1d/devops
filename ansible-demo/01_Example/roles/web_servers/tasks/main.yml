@@ -1,0 +1,20 @@
+- name: install packages
+  apt:
+    name:
+      - apache2
+      - libapache2-mod-php
+    state: latest
+
+- name: copy default html file
+  copy:
+    src: default_site.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0644
+    
+- name: start apache2
+  service:
+    name: apache2
+    state: started
+    enabled: true

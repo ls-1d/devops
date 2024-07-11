@@ -1,0 +1,4 @@
+- name: install mariabd package (ubuntu)
+  apt:
+    name: mariadb-server
+    state: latest

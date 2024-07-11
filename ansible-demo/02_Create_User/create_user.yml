@@ -1,0 +1,26 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install updates
+    apt:
+      upgrade: dist
+      update_cache: yes
+  
+  - name: create user admin
+    user:
+      name: admin
+      groups: root
+  - name: authorized key
+    authorized_key:
+      user: admin
+      key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINQwJFoQoWndQQQyvCYggVCCO8HTHeigMFBNwfxdzSMv default_key'
+
+  - name:
+    copy:
+      src: sudoer_admin
+      dest: /etc/sudoers.d/admin
+      owner: root
+      group: root
+      mode: 0440

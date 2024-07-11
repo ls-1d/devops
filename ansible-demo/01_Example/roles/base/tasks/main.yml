@@ -1,0 +1,13 @@
+- name: authorized key
+  authorized_key:
+    user: simone
+    key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE2naOW1eE7wq/SPMKIxw5XhYR4fZ/d4OZAV0aeyODve default_dev'
+
+# - name: sshd_config file from template
+#   template:
+#     src: sshd_config_ubuntu.j2
+#     dest: /etc/ssh/sshd_config
+#     owner: root
+#     group: root
+#     mode: 0644
+#   notify: restart_sshd
