@@ -1,10 +1,10 @@
 pipeline {
     agent any
-    
+
     tools {nodejs "node"}
 
     // environment {
-    //     //DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') 
+    //     //DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
     // }
 
     stages {
@@ -37,10 +37,10 @@ pipeline {
     post {
         always {
             script {
-                
+
                     sh 'mv all_in_docker/client/build /var/www/html'
             }
-            cleanWs() 
+            cleanWs()
         }
         success {
             echo 'Pipeline succeeded!'

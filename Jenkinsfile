@@ -1,5 +1,5 @@
 pipeline {
-  agent { 
+  agent {
         node {
             label 'agent1'
             }
@@ -29,7 +29,7 @@ pipeline {
         sh 'docker run -d -p 80:80 autopilotsedate66/frontend'
       }
     }
-    
+
     stage('Login') {
       steps {
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
